@@ -1,10 +1,10 @@
-#pragma once
-
 /**
     \file
-    \details
+    \brief
         В файле описывается шаблонный класс разреженной матрицы, а также вспомогательная структура Position
 */
+
+#pragma once
 
 #include <iostream>
 #include <map>
@@ -50,39 +50,74 @@ struct Position
 template <typename T, T initial>
 class Matrix
 {
-private:
-    /**
-        \brief
-            Данные матрицы
-    */     
-    std::map<Position, T> data;
 public:
 
+    /**
+        \brief
+            Порокси-класс для работы с элементами матрицы
+        \details
+            Используется для контроля присваиваемых и возвращаемых значений согласно заданию
+    */
+    template <typename R>
     class Element
     {
-    public:    
-        Element(Matrix& matrix, /*Position position,*/ T value) : 
+    public:
+        /**
+            \brief
+                Констуктор класса
+            \param matrix ссылка на матрицу
+            \param position позиция элемента
+        */    
+        Element(Matrix& matrix, Position position) : 
             m_matrix(matrix),
-            // m_position(position),
-            m_value(value)
+            m_position(position)            
         {}
 
-        // Element& operator=(T new_value)
-        // {
+        /**
+            \brief
+                Переопределение оператора присваивания значения элементу
+            \param new_value присваиваемое значение
+        */
+        Element& operator=(R new_value)
+        {
+            if (new_value == initial)
+            {
+                auto it = m_matrix.data.find(m_position);
+                if (it != m_matrix.data.end())
+                    m_matrix.data.erase(it);
+            } else {
+                m_matrix.data[m_position] = new_value;
+            }
+            //
+            return *this;    
+        }        
 
-        // }        
-
-        // operator T() const
-        // {
-            
-        // } 
+        /**
+            \brief
+                Переопределение оператора получения значения элемента            
+        */
+        operator R() const
+        {
+            if (m_matrix.data.find(m_position) == m_matrix.data.end())
+            {                
+                return initial;
+            } else {             
+                return m_matrix.data[m_position];
+            }
+        } 
 
     private:
+        /**
+            \brief
+                Ссылка на матрицу
+        */
         Matrix& m_matrix;
-        // Position m_position;
-        T m_value;
+        /**
+            \brief
+                Позиция элемента
+        */
+        Position m_position;        
     };
-
 
     /**
         \brief
@@ -109,10 +144,11 @@ public:
                 Переопределение оператора []
             \param y Y координата элемента
         */
-        T& operator[](int y)
-        {
+        Element<T> operator[](int y)
+        {            
             Position key{m_x, y};
-            return matrix.data[key];       
+            Element<T> new_element(matrix, key);
+            return new_element;
         }
 
     private:
@@ -145,11 +181,8 @@ public:
             Подсчет количества ячеек не равных значению по умолчанию            
     */
     int size()
-    {
-        return std::count_if(data.begin(), data.end(), [](const auto& pair)
-        {
-            return pair.second != initial;
-        });
+    {   
+        return data.size();
     }
 
     /**
@@ -199,4 +232,10 @@ public:
     {
         return Iterator(data.end());
     }
+private:
+    /**
+        \brief
+            Данные матрицы
+    */     
+    std::map<Position, T> data;
 };

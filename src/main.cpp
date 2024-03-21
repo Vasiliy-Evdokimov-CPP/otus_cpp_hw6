@@ -20,28 +20,31 @@ int main()
 {
     /* ========== EXAMPLE ========== */
 
-    // //  Бесконечная матрица int заполнена значениями -1 
-    // Matrix<int, -1> matrix_0;
-    // assert(matrix_0.size() == 0);   //  все ячейки свободны    
+    //  Бесконечная матрица int заполнена значениями -1 
+    Matrix<int, -1> matrix_0;
+    assert(matrix_0.size() == 0);   //  все ячейки свободны    
+    
+    auto a = matrix_0[0][0];
+    assert(a == -1);
+    assert(matrix_0.size() == 0);
 
-    // auto a = matrix_0[0][0];
-    // assert(a == -1);
-    // assert(matrix_0.size() == 0);
+    matrix_0[100][100] = 314;
+    assert(matrix_0[100][100] == 314);
+    assert(matrix_0.size() == 1);
 
-    // matrix_0[100][100] = 314;
-    // assert(matrix_0[100][100] == 314);
-    // assert(matrix_0.size() == 1);
+    //  выведется одна строка 
+    //  100100314
+    for(auto c: matrix_0)
+    { 
+        int x;
+        int y;
+        int v;
+        std::tie(x, y, v) = c; 
+        std::cout << x << y << v << std::endl; 
+    }
 
-    // //  выведется одна строка 
-    // //  100100314
-    // for(auto c: matrix_0) 
-    // { 
-    //     int x;
-    //     int y;
-    //     int v;
-    //     std::tie(x, y, v) = c; 
-    //     std::cout << x << y << v << std::endl; 
-    // }
+    matrix_0[100][100] = -1;
+    assert(matrix_0.size() == 0);
 
     /* ========== TASK ========== */
 
